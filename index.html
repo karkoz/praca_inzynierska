@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <title>Interaktywna mapa przestępczości w Poznaniu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.49.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.49.0/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="js.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+    <link href="introjs.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <script src="https://unpkg.com/tippy.js@3/dist/tippy.all.min.js"></script>
+
+</head>
+
+<body>
+    
+    <div id='header'>
+        <a>Interaktywna mapa Przestępczości w Poznaniu</a><i class="fas fa-info-circle fa-xs" style="color:azure" data-tippy="Projekt Inżynierski pt. Interaktywna Mapa Przestępczości wyk. Karol Kozyra Geoinformacja inż. IV rok" data-tippy-arrow="true" data-tippy-placement="right"></i>
+    </div>
+
+    <div id='nav'>
+
+        <ul id="accordion" class="accordion">
+            <li>
+                <div class="link" data-tippy="Dane dla 2017 roku" data-tippy-arrow="true"><i class="fa fa-database"></i>Wybierz kategorie przestępstw<i class="fa fa-chevron-down" id="kategorie"></i></div>
+                <ul class="submenu" name="submenu1">
+                    <li><input type="radio" name="przestepstwa" id="wszystkie" value="Wszystkie przestepstwa" placeholder="Wszystkie przestępstwa" onclick="myFunction(); warstwy(); myFunction6(); title1(); kursor(); legenda1_1()"><a href="#">Wszystkie przestępstwa</a></li>
+                    <li><input type="radio" name="przestepstwa" id="kradziez" value="Kradziez" placeholder="Kradzież" onclick="myFunction(); warstwy(); myFunction6(); title1(); kursor(); legenda1_1()"><a href="#">Kradzież</a></li>
+                    <li><input type="radio" name="przestepstwa" id="kradziez-z" value="Kradziez z wlamaniem" placeholder="Kradzież z włamaniem" onclick="myFunction(); warstwy(); myFunction6(); title1(); kursor(); legenda1_1()"><a href="#">Kradzież z włamaniem</a></li>
+                    <li><input type="radio" name="przestepstwa" id="kradziez-p" value="Kradziez pojazdu" placeholder="Kradzież pojazdu" onclick="myFunction(); warstwy(); myFunction6(); title1(); kursor(); legenda1_1()"><a href="#">Kradzież pojazdu</a></li>
+                    <li><input type="radio" name="przestepstwa" id="uszkodzenie" value="Uszkodzenie mienia" placeholder="Uszkodzenie mienia" onclick="myFunction(); warstwy(); myFunction6(); title1(); kursor(); legenda1_1()"><a href="#">Uszkodzenie mienia</a></li>
+                    <li><input type="radio" name="przestepstwa" id="uszczerbek" value="Uszczerbek na zdrowiu" placeholder="Uszczerbek na zdrowiu" onclick="myFunction(); warstwy(); myFunction6(); title1(); kursor(); legenda1_1()"><a href="#">Uszczerbek na zdrowiu</a></li>
+                    <li><input type="radio" name="przestepstwa" id="bojka-i" value="Bojka i pobicie" placeholder="Bójka i pobicie" onclick="myFunction(); warstwy(); myFunction6(); title1(); kursor(); legenda1_1()"><a href="#">Bójka i pobicie</a></li>
+                    <li><input type="radio" name="przestepstwa" id="rozboje" value="Rozboje wymuszenia i kradzieze rozbojnicze" placeholder="Rozboje, wymuszenia i kradzieże rozbójnicze" onclick="myFunction(); warstwy(); myFunction6(); title1(); kursor(); legenda1_1()"><a href="#">Rozboje, wymuszenia i kradzieże rozbójnicze</a></li>
+                    <li><input type="radio" name="przestepstwa" id="zgwalcenie" value="Zgwalcenie" placeholder="Zgwałcenie" onclick="myFunction(); warstwy(); myFunction6(); title1(); kursor(); legenda1_1()"><a href="#">Zgwałcenie</a></li>
+                    <li><input type="radio" name="przestepstwa" id="zabojstwo" value="Zabojstwo" placeholder="Zabójstwo" onclick="myFunction(); warstwy(); myFunction6(); title1(); kursor(); legenda1_1()"><a href="#">Zabójstwo</a></li>
+                    <li><input type="radio" name="przestepstwa" id="narkomania" value="Ustawa o przeciwdzialaniu narkomanii" placeholder="Ustawa o przeciwdziałaniu narkomanii" onclick="myFunction(); warstwy(); myFunction6(); title1(); kursor(); legenda1_1()"><a href="#">Ustawa o przeciwdziałaniu narkomanii</a></li>
+                </ul>
+            </li>
+            <li class="default open">
+                <div class="link"><i class="far fa-map"></i>Wybierz rodzaj mapy<i class="fa fa-chevron-down" id='mapa'></i></div>
+                <form name="submenu2">
+                    <ul class="submenu">
+                        <li><input type="radio" name="mapa" id="mapaPrzestepstw" value="Ulice" placeholder="Mapa ulic" onclick="myFunction(); warstwy(); legenda1(); myFunction4(); title1()" checked><a href="#">Mapa ulic</a></li>
+                        <li><input type="radio" name="mapa" id="hot-spot" value="HotSpot" placeholder="Mapa skupień" onclick="myFunction(); warstwy();legenda2(); myFunction4(); title1()"><a href="#">Mapa skupień</a></li>
+                        <li><input type="radio" name="mapa" id="gwr" value="Gwr" placeholder="Siatka heksagonalna" onclick="myFunction(); warstwy();legenda3(); myFunction4(); title1(); kursor()"><a href="#">Siatka heksagonalna</a></li>
+                    </ul>
+                </form>
+            </li>
+            <li class="default open">
+                <div class="link"><i class="fa fa-database"></i>Wybierz dane do modelu GWR<i class="fa fa-chevron-down" id='gwr1'></i></div>
+                <form class="submenu" name="submenu3">
+            <li><input type="radio" name="gwr" id="gwr1" value="Mezczyzni" placeholder="Gęstość zaludnienia mężczyzn" onclick="myFunction3(); gwrWarstwy(); legenda4(); myFunction5(); title2(); error()"><a href="#">Gęstość zaludnienia mężczyzn</a></li>
+            <li><input type="radio" name="gwr" id="gwr2" value="Kobiety" placeholder="Gęstość zaludnienia kobiet" onclick="myFunction3(); gwrWarstwy(); legenda4(); myFunction5(); title2(); error()"><a href="#">Gęstość zaludnienia kobiet</a></li>
+            <li><input type="radio" name="gwr" id="gwr3" value="Kamery" placeholder="Lokalizacja kamer" onclick="myFunction3(); gwrWarstwy(); legenda4(); myFunction5(); title2(); error()"><a href="#">Lokalizacja kamer</a></li>
+            <li><input type="radio" name="gwr" id="gwr4" value="Bary" placeholder="Bary, puby, kluby, restauracje" onclick="myFunction3(); gwrWarstwy(); legenda4(); myFunction5(); title2(); error()"><a href="#">Bary, puby, kluby, restauracje</a></li>
+            <li><button id="przycisk">WYKONAJ MODEL GWR</button></li>
+            </form>
+            </li>
+        </ul>
+
+    </div>
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.1.0/mapbox-gl-compare.js'></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-compare/v0.1.0/mapbox-gl-compare.css' type='text/css' />
+
+
+    <div id="map">
+        <div id='before' class='map'></div>
+        <div id='after' class='map'></div>
+    </div>
+
+    <div class="mapa2"></div>
+
+    <div id='legend1' class='legend' style='display: none;'>
+        <h4>Wartość p/km</h4><i class="fas fa-info-circle fa-xs" style="color:black" data-tippy="Wskaźnik liczba prestępstw na kilometr ulicy" data-tippy-arrow="true"></i>
+        <div class='bar'></div>
+        <p>Niskie</p>
+        <p1>Wysokie</p1><br>
+        <div><span style='background-color: #13021d'></span>0</div>
+        <div><span style='background-color: #33095e'></span>0.01 - 1.5</div>
+        <div><span style='background-color: #781c6d'></span>1.5 - 5.4</div>
+        <div><span style='background-color: #bb3754'></span>5.4 - 11.7</div>
+        <div><span style='background-color: #ed6925'></span>11.7 - 23.1</div>
+        <div><span style='background-color: #fcb519'></span>23.1 - 48</div>
+        <div><span style='background-color: #fcffa4'></span>48 - 130</div>
+    </div>
+
+    <div id='legend2' class='legend' style='display: none;'>
+        <h4>Wartość</h4><i class="fas fa-info-circle fa-xs" style="color:black" data-tippy="Skupienia niskich i wysokich wartości przestępstw" data-tippy-arrow="true"></i>
+        <div class='bar1'></div>
+        <p>Cold spot</p>
+        <p1>Hot Spot</p1><br>
+
+        <div><span style='background-color: #0571b0'></span>99% Poziom ufności</div>
+        <div><span style='background-color: #63a9cf'></span>95% Poziom ufności</div>
+        <div><span style='background-color: #b4d6e7'></span>90% Poziom ufności</div>
+        <div><span style='background-color: #ffffff'></span>Statystycznie nieistotne</div>
+        <div><span style='background-color: #f5c1a9'></span>90% Poziom ufności</div>
+        <div><span style='background-color: #e66e61'></span>95% Poziom ufności</div>
+        <div><span style='background-color: #ca0020'></span>99% Poziom ufności</div>
+    </div>
+
+    <div id='legend3' class='legend' style='display: none;'>
+        <h4>Wartość</h4><i class="fas fa-info-circle fa-xs" style="color:black" data-tippy="Średnie wartości wyliczone dla oczek siatki heksagonów" data-tippy-arrow="true"></i>
+        <div class='bar'></div>
+        <p>Niskie</p>
+        <p1>Wysokie</p1><br>
+
+    </div>
+
+    <div id='legend4' style='display: none;'>
+        <h4>Wartość</h4><i class="fas fa-info-circle fa-xs" style="color:black" data-tippy="Średnie wartości wyliczone dla oczek siatki heksagonów" data-tippy-arrow="true"></i>
+        <div class='bar'></div>
+        <p>Niskie</p>
+        <p1>Wysokie</p1><br>
+
+    </div>
+
+    <div id='legend5' style='display: none;'>
+        <h4>Wartość</h4><i class="fas fa-info-circle fa-xs" style="color:black" data-tippy="Wartość współczynnika modelu GWR" data-tippy-arrow="true"></i>
+        <div class='bar2'></div>
+        <p>Niskie</p>
+        <p1>Wysokie</p1><br>
+
+        <div><span style='background-color: #b6b4b4 '></span>Brak danych</div>
+    </div>
+
+    <div id="titleLeft">
+        <p id="title1"></p>
+    </div>
+
+    <div id="titleRight">
+        <p id="title2"></p>
+    </div>
+
+    <script type="text/javascript" src="intro.js"></script>
+    <script type="text/javascript">
+        var intro = introJs();
+        intro.setOptions({
+            steps: [{
+                    element: '.wprowadzenie',
+                    intro: 'Projekt inżynierski pt"Interaktywna Mapa Przestępczości w Poznaniu"'
+                },
+                {
+                    element: '#kategorie',
+                    intro: 'Kategorie przestępstw do wyboru'
+                },
+                {
+                    element: '#mapa',
+                    intro: 'Wybór rodzaju mapy'
+                },
+                {
+                    element: '#mapaPrzestepstw',
+                    intro: 'Mapa ulic: przestępstwa mierzone wskaźnikiem liczba przestępstw na kilometr ulicy'
+                },
+                {
+                    element: '#hot-spot',
+                    intro: 'Mapa skupień: skupienia wysokich oraz niskich wartości'
+                },
+                {
+                    element: '#gwr',
+                    intro: 'Średnie wartości (przestępstwa na kilometr ulicy) wyliczone dla oczek siatki heksagonów'
+                },
+                {
+                    element: '#gwr1',
+                    intro: 'Dane do porównania z przestępstwami'
+                },
+                {
+                    element: '#przycisk',
+                    intro: 'Wykonanie modelu GWR z wybranych wcześniej kategorii'
+                },
+                {
+                    element: '.mapa1',
+                    intro: 'Mapa przestępstw'
+                },
+                {
+                    element: '.mapa2',
+                    intro: 'Mapa danych do porównania'
+                }
+            ]
+        });
+
+        intro.start();
+    </script>
+    <script async defer src="https://api.mapbox.com/mapbox-assembly/v0.23.1/assembly.js"></script>
+    <script>
+        
+        //dodanie map
+        mapboxgl.accessToken = 'pk.eyJ1Ijoia2Fya296MyIsImEiOiJjamRhbWV1ZHIybXNtMnFsYjFjODF3aWlzIn0.L5HrNymgl6ji82sWn4OQQQ';
+
+        var beforeMap = new mapboxgl.Map({
+            container: 'before',
+            style: 'mapbox://styles/karkoz3/cjp1c48pw120v2sp1iepor7ol',
+            center: [16.932, 52.402],
+            zoom: 10.46
+        });
+
+        var afterMap = new mapboxgl.Map({
+            container: 'after',
+            style: 'mapbox://styles/karkoz3/cjq2t6pf66agw2srkloe2ok7t',
+            center: [16.932, 52.402],
+            zoom: 10.46
+        });
+
+        var map = new mapboxgl.Compare(beforeMap, afterMap, {
+            // Set this to enable comparing two maps by mouse movement:
+            // mousemove: true
+        });
+
+        afterMap.addControl(new mapboxgl.NavigationControl());
+        
+
+        wszystkie = ['Wszystkie przestepstwa Ulice', 'Kradziez Ulice', 'Kradziez z wlamaniem Ulice', 'Bojka i pobicie Ulice', 'Kradziez pojazdu Ulice', 'Rozboje wymuszenia i kradzieze rozbojnicze Ulice', 'Ustawa o przeciwdzialaniu narkomanii Ulice', 'Uszczerbek na zdrowiu Ulice', 'Uszkodzenie mienia Ulice', 'Zabojstwo Ulice', 'Zgwalcenie Ulice', 'Wszystkie przestepstwa Gwr', 'Kradziez Gwr', 'Kradziez z wlamaniem Gwr', 'Bojka i pobicie Gwr', 'Kradziez pojazdu Gwr', 'Rozboje wymuszenia i kradzieze rozbojnicze Gwr', 'Ustawa o przeciwdzialaniu narkomanii Gwr', 'Uszczerbek na zdrowiu Gwr', 'Uszkodzenie mienia Gwr', 'Zabojstwo Gwr', 'Zgwalcenie Gwr', 'Wszystkie przestepstwa HotSpot', 'Kradziez HotSpot', 'Kradziez z wlamaniem HotSpot', 'Kradziez pojazdu HotSpot', 'Bojka i pobicie HotSpot', 'Rozboje wymuszenia i kradzieze rozbojnicze HotSpot', 'Ustawa o przeciwdzialaniu narkomanii HotSpot', 'Uszczerbek na zdrowiu HotSpot', 'Uszkodzenie mienia HotSpot', 'Zabojstwo HotSpot', 'Zgwalcenie HotSpot'];
+
+        wszystkie2 = ['Bary', 'Kamery', 'Mezczyzni', 'Kobiety', 'Wszystkie przestepstwaMezczyzni', 'KradziezMezczyzni', 'Kradziez z wlamaniemMezczyzni', 'Kradziez pojazduMezczyzni', 'Uszkodzenie mieniaMezczyzni', 'Uszczerbek na zdrowiuMezczyzni', 'Bojka i pobicieMezczyzni', 'Rozboje wymuszenia i kradzieze rozbojniczeMezczyzni', 'ZgwalcenieMezczyzni', 'ZabojstwoMezczyzni', 'Ustawa o przeciwdzialaniu narkomaniiMezczyzni', 'Wszystkie przestepstwaKobiety', 'KradziezKobiety', 'Kradziez z wlamaniemKobiety', 'Kradziez pojazduKobiety', 'Uszkodzenie mieniaKobiety', 'Uszczerbek na zdrowiuKobiety', 'Bojka i pobicieKobiety', 'Rozboje wymuszenia i kradzieze rozbojniczeKobiety', 'ZgwalcenieKobiety', 'ZabojstwoKobiety', 'Ustawa o przeciwdzialaniu narkomaniiKobiety', 'Wszystkie przestepstwaBary', 'KradziezBary', 'Kradziez z wlamaniemBary', 'Kradziez pojazduBary', 'Uszkodzenie mieniaBary', 'Uszczerbek na zdrowiuBary', 'Bojka i pobicieBary', 'Rozboje wymuszenia i kradzieze rozbojniczeBary', 'ZgwalcenieBary', 'ZabojstwoBary', 'Ustawa o przeciwdzialaniu narkomaniiBary', 'Wszystkie przestepstwaKamery', 'KradziezKamery', 'Kradziez z wlamaniemKamery', 'Kradziez pojazduKamery', 'Uszkodzenie mieniaKamery', 'Uszczerbek na zdrowiuKamery', 'Bojka i pobicieKamery', 'Rozboje wymuszenia i kradzieze rozbojniczeKamery', 'ZgwalcenieKamery', 'ZabojstwoKamery', 'Ustawa o przeciwdzialaniu narkomaniiKamery'];
+
+        //zaladowanie warstw do mapy po lewej, widocznosc none
+        beforeMap.on('load', function() {
+            beforeMap.setLayoutProperty('Wszystkie przestepstwa Gwr', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Kradziez Gwr', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Kradziez z wlamaniem Gwr', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Bojka i pobicie Gwr', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Kradziez pojazdu Gwr', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Rozboje wymuszenia i kradzieze rozbojnicze Gwr', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Ustawa o przeciwdzialaniu narkomanii Gwr', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Uszczerbek na zdrowiu Gwr', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Uszkodzenie mienia Gwr', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Zabojstwo Gwr', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Zgwalcenie Gwr', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Wszystkie przestepstwa Ulice', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Kradziez Ulice', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Kradziez z wlamaniem Ulice', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Bojka i pobicie Ulice', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Kradziez pojazdu Ulice', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Rozboje wymuszenia i kradzieze rozbojnicze Ulice', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Ustawa o przeciwdzialaniu narkomanii Ulice', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Uszczerbek na zdrowiu Ulice', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Uszkodzenie mienia Ulice', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Zabojstwo Ulice', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Zgwalcenie Ulice', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Wszystkie przestepstwa HotSpot', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Kradziez HotSpot', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Kradziez z wlamaniem HotSpot', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Kradziez pojazdu HotSpot', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Bojka i pobicie HotSpot', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Rozboje wymuszenia i kradzieze rozbojnicze HotSpot', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Ustawa o przeciwdzialaniu narkomanii HotSpot', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Uszczerbek na zdrowiu HotSpot', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Uszkodzenie mienia HotSpot', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Zabojstwo HotSpot', 'visibility', 'none');
+            beforeMap.setLayoutProperty('Zgwalcenie HotSpot', 'visibility', 'none');
+
+            // make a pointer cursor
+            beforeMap.getCanvas().style.cursor = 'default';
+
+            // make a pointer cursor
+            beforeMap.getCanvas().style.cursor = 'default';
+
+        });
+
+        //zaladowanie warstw do mapy po prawej, niewidoczne
+        afterMap.on('load', function() {
+            afterMap.setLayoutProperty('Bary', 'visibility', 'none');
+            afterMap.setLayoutProperty('Kamery', 'visibility', 'none');
+            afterMap.setLayoutProperty('Mezczyzni', 'visibility', 'none');
+            afterMap.setLayoutProperty('Kobiety', 'visibility', 'none');
+            afterMap.setLayoutProperty('Wszystkie przestepstwaMezczyzni', 'visibility', 'none');
+            afterMap.setLayoutProperty('KradziezMezczyzni', 'visibility', 'none');
+            afterMap.setLayoutProperty('Kradziez z wlamaniemMezczyzni', 'visibility', 'none');
+            afterMap.setLayoutProperty('Kradziez pojazduMezczyzni', 'visibility', 'none');
+            afterMap.setLayoutProperty('Uszkodzenie mieniaMezczyzni', 'visibility', 'none');
+            afterMap.setLayoutProperty('Uszczerbek na zdrowiuMezczyzni', 'visibility', 'none');
+            afterMap.setLayoutProperty('Bojka i pobicieMezczyzni', 'visibility', 'none');
+            afterMap.setLayoutProperty('Rozboje wymuszenia i kradzieze rozbojniczeMezczyzni', 'visibility', 'none');
+            afterMap.setLayoutProperty('ZgwalcenieMezczyzni', 'visibility', 'none');
+            afterMap.setLayoutProperty('ZabojstwoMezczyzni', 'visibility', 'none');
+            afterMap.setLayoutProperty('Ustawa o przeciwdzialaniu narkomaniiMezczyzni', 'visibility', 'none');
+            afterMap.setLayoutProperty('Wszystkie przestepstwaKobiety', 'visibility', 'none');
+            afterMap.setLayoutProperty('KradziezKobiety', 'visibility', 'none');
+            afterMap.setLayoutProperty('Kradziez z wlamaniemKobiety', 'visibility', 'none');
+            afterMap.setLayoutProperty('Kradziez pojazduKobiety', 'visibility', 'none');
+            afterMap.setLayoutProperty('Uszkodzenie mieniaKobiety', 'visibility', 'none');
+            afterMap.setLayoutProperty('Uszczerbek na zdrowiuKobiety', 'visibility', 'none');
+            afterMap.setLayoutProperty('Bojka i pobicieKobiety', 'visibility', 'none');
+            afterMap.setLayoutProperty('Rozboje wymuszenia i kradzieze rozbojniczeKobiety', 'visibility', 'none');
+            afterMap.setLayoutProperty('ZgwalcenieKobiety', 'visibility', 'none');
+            afterMap.setLayoutProperty('ZabojstwoKobiety', 'visibility', 'none');
+            afterMap.setLayoutProperty('Ustawa o przeciwdzialaniu narkomaniiKobiety', 'visibility', 'none');
+            afterMap.setLayoutProperty('Wszystkie przestepstwaBary', 'visibility', 'none');
+            afterMap.setLayoutProperty('KradziezBary', 'visibility', 'none');
+            afterMap.setLayoutProperty('Kradziez z wlamaniemBary', 'visibility', 'none');
+            afterMap.setLayoutProperty('Kradziez pojazduBary', 'visibility', 'none');
+            afterMap.setLayoutProperty('Uszkodzenie mieniaBary', 'visibility', 'none');
+            afterMap.setLayoutProperty('Uszczerbek na zdrowiuBary', 'visibility', 'none');
+            afterMap.setLayoutProperty('Bojka i pobicieBary', 'visibility', 'none');
+            afterMap.setLayoutProperty('Rozboje wymuszenia i kradzieze rozbojniczeBary', 'visibility', 'none');
+            afterMap.setLayoutProperty('ZgwalcenieBary', 'visibility', 'none');
+            afterMap.setLayoutProperty('ZabojstwoBary', 'visibility', 'none');
+            afterMap.setLayoutProperty('Ustawa o przeciwdzialaniu narkomaniiBary', 'visibility', 'none');
+            afterMap.setLayoutProperty('Wszystkie przestepstwaKamery', 'visibility', 'none');
+            afterMap.setLayoutProperty('KradziezKamery', 'visibility', 'none');
+            afterMap.setLayoutProperty('Kradziez z wlamaniemKamery', 'visibility', 'none');
+            afterMap.setLayoutProperty('Kradziez pojazduKamery', 'visibility', 'none');
+            afterMap.setLayoutProperty('Uszkodzenie mieniaKamery', 'visibility', 'none');
+            afterMap.setLayoutProperty('Uszczerbek na zdrowiuKamery', 'visibility', 'none');
+            afterMap.setLayoutProperty('Bojka i pobicieKamery', 'visibility', 'none');
+            afterMap.setLayoutProperty('Rozboje wymuszenia i kradzieze rozbojniczeKamery', 'visibility', 'none');
+            afterMap.setLayoutProperty('ZgwalcenieKamery', 'visibility', 'none');
+            afterMap.setLayoutProperty('ZabojstwoKamery', 'visibility', 'none');
+            afterMap.setLayoutProperty('Ustawa o przeciwdzialaniu narkomaniiKamery', 'visibility', 'none');
+
+
+            // make a pointer cursor
+            afterMap.getCanvas().style.cursor = 'default';
+
+            // make a pointer cursor
+            afterMap.getCanvas().style.cursor = 'default';
+
+        });
+        
+        //funkcje przelaczania legend
+
+        function legenda1() {
+            var legend1 = document.getElementById('legend1')
+            var legend2 = document.getElementById('legend2')
+            var legend3 = document.getElementById('legend3')
+
+            if (legend1.style.display === 'none') {
+                legend2.style.display = 'none';
+                legend3.style.display = 'none';
+                legend1.style.display = 'block';
+            } else {
+                legend1.style.display = 'none';
+            }
+        }
+
+        function legenda2() {
+            var legend1 = document.getElementById('legend1')
+            var legend2 = document.getElementById('legend2')
+            var legend3 = document.getElementById('legend3')
+
+            if (legend2.style.display === 'none') {
+                legend1.style.display = 'none';
+                legend3.style.display = 'none';
+                legend2.style.display = 'block';
+            } else {
+                legend2.style.display = 'none';
+            }
+        }
+
+        function legenda3() {
+            var legend1 = document.getElementById('legend1')
+            var legend2 = document.getElementById('legend2')
+            var legend3 = document.getElementById('legend3')
+
+            if (legend3.style.display === 'none') {
+                legend2.style.display = 'none';
+                legend1.style.display = 'none';
+                legend3.style.display = 'block';
+            } else {
+                legend3.style.display = 'block';
+            }
+        }
+
+        function legenda4() {
+
+            var legend4 = document.getElementById('legend4')
+
+            if (legend4.style.display === 'none') {
+                legend5.style.display = 'none';
+                legend4.style.display = 'block';
+            } else {
+                legend4.style.display = 'block';
+            }
+        }
+        
+        function legenda1_1() {
+            
+            var ulice = document.getElementById('mapaPrzestepstw');
+
+            if (ulice.checked) {
+                legend1.style.display = 'block';
+            } else {
+                legend1.style.display = 'none';
+            }
+        }
+
+        //funkcje przypisujace nazwy do zmiennych
+        var txt = "";
+        var txt2 = "";
+        var txt3 = "";
+        var mapaW = "";
+        var model = "";
+
+        function myFunction() {
+            var nazwa = document.getElementsByName('przestepstwa');
+            var nazwa2 = document.forms.submenu2;
+
+            var i;
+            for (i = 0; i < nazwa.length; i++) {
+                if (nazwa[i].checked)
+                    txt = nazwa[i].value;
+            }
+
+            var i;
+            for (i = 0; i < nazwa2.length; i++) {
+                if (nazwa2[i].checked)
+                    txt2 = nazwa2[i].value;
+            }
+
+            mapaW = (txt + " " + txt2)
+
+            model = (txt + txt3)
+
+        }
+
+        function myFunction3() {
+
+            var nazwa3 = document.forms.submenu3;
+
+            var i;
+            for (i = 0; i < nazwa3.length; i++) {
+                if (nazwa3[i].checked)
+                    txt3 = nazwa3[i].value;
+            }
+
+            model = (txt + txt3)
+            
+        }
+        
+        //funkcje przelaczania warstw
+        function warstwy() {
+
+            for (warstwa in wszystkie) {
+                beforeMap.setLayoutProperty(wszystkie[warstwa], 'visibility', 'none')
+            }
+            beforeMap.setLayoutProperty(mapaW, 'visibility', 'visible');
+
+        }
+
+        function gwrWarstwy() {
+
+            for (warstwa in wszystkie2) {
+                afterMap.setLayoutProperty(wszystkie2[warstwa], 'visibility', 'none')
+            }
+            afterMap.setLayoutProperty(txt3, 'visibility', 'visible');
+
+        }
+        
+        //nadanie tyułów
+
+        var tytul1 = "Mapa ulic";
+        var tytul2 = "";
+        var tytul3 = "";
+
+        function myFunction4() { //tytuł mapy po lewej stronie
+
+            var tytul = document.forms.submenu2;
+
+            var i;
+            for (i = 0; i < tytul.length; i++) {
+                if (tytul[i].checked)
+                    tytul1 = tytul[i].placeholder;
+            }
+
+            console.log(tytul1)
+
+        }
+
+        function myFunction5() { //tytuł mapy po prawej stronie
+
+            var tytull = document.forms.submenu3;
+
+            var i;
+            for (i = 0; i < tytull.length; i++) {
+                if (tytull[i].checked)
+                    tytul2 = tytull[i].placeholder;
+            }
+
+            console.log(tytul2)
+
+        }
+
+        function myFunction6() { //nazwy kategorii przestepstw
+
+            var tytulll = document.getElementsByName('przestepstwa');
+
+            var i;
+            for (i = 0; i < tytulll.length; i++) {
+                if (tytulll[i].checked)
+                    tytul3 = tytulll[i].placeholder;
+            }
+
+            console.log(tytul3)
+
+        }
+
+        //nadanie i przypisanie tytułów
+        function title1() {
+
+            document.getElementById("title1").innerHTML = tytul3 + "</br>" + tytul1;
+
+        }
+
+        function title2() {
+
+            document.getElementById("title2").innerHTML = tytul2;
+
+        }
+
+        //funkcja wyswietlania modelu gwr przy pomocy przycisku 
+        document.getElementById("przycisk").addEventListener("click", function() {
+
+            for (warstwa in wszystkie2) {
+                afterMap.setLayoutProperty(wszystkie2[warstwa], 'visibility', 'none')
+            }
+            afterMap.setLayoutProperty(model, 'visibility', 'visible');
+
+            event.preventDefault();
+        });
+
+        //wlaczanie tytulu po nacisnieciu przycisku 
+        document.getElementById("przycisk").addEventListener("click", function() {
+
+            document.getElementById("title2").innerHTML = "Model GWR " + txt + "</br>" + "Wskaźnik: " + txt3;
+
+            event.preventDefault();
+        });
+        //wyswietlanie legendy
+        document.getElementById("przycisk").addEventListener("click", function() {
+
+            var legend5 = document.getElementById('legend5')
+            var legend4 = document.getElementById('legend4')
+
+            if (legend5.style.display === 'none') {
+                legend4.style.display = 'none';
+                legend5.style.display = 'block';
+            } else {
+                legend5.style.display = 'block';
+            }
+
+            event.preventDefault();
+        });
+
+
+        //pop-upy dla siatki heksagonów
+
+        beforeMap.on('click', 'Wszystkie przestepstwa Gwr', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties._mean + '</div>')
+                .addTo(beforeMap);
+        });
+
+        beforeMap.on('click', 'Kradziez Gwr', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.kradziez_m + '</div>')
+                .addTo(beforeMap);
+        });
+
+        beforeMap.on('click', 'Kradziez z wlamaniem Gwr', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.kradziez_z + '</div>')
+                .addTo(beforeMap);
+        });
+
+        beforeMap.on('click', 'Kradziez pojazdu Gwr', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.kradziez_p + '</div>')
+                .addTo(beforeMap);
+        });
+
+        beforeMap.on('click', 'Uszkodzenie mienia Gwr', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.uszkodzeni + '</div>')
+                .addTo(beforeMap);
+        });
+
+        beforeMap.on('click', 'Uszczerbek na zdrowiu Gwr', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.uszczerbek + '</div>')
+                .addTo(beforeMap);
+        });
+
+        beforeMap.on('click', 'Bojka i pobicie Gwr', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.bojka_mean + '</div>')
+                .addTo(beforeMap);
+        });
+
+        beforeMap.on('click', 'Rozboje wymuszenia i kradzieze rozbojnicze Gwr', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.rozboje_me + '</div>')
+                .addTo(beforeMap);
+        });
+
+        beforeMap.on('click', 'Zgwalcenie Gwr', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.zgwalcenie + '</div>')
+                .addTo(beforeMap);
+        });
+
+        beforeMap.on('click', 'Zabojstwo Gwr', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.zabojstwo_ + '</div>')
+                .addTo(beforeMap);
+        });
+
+        beforeMap.on('click', 'Ustawa o przeciwdzialaniu narkomanii Gwr', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.ustawa_mea + '</div>')
+                .addTo(beforeMap);
+        });
+
+        function kursor() {
+
+            // Change the cursor to a pointer when the mouse is over the places layer.
+            beforeMap.on('mouseenter', mapaW, function() {
+                beforeMap.getCanvas().style.cursor = 'pointer';
+            });
+
+            // Change it back to a pointer when it leaves.
+            beforeMap.on('mouseleave', mapaW, function() {
+                beforeMap.getCanvas().style.cursor = '';
+            });
+
+        }
+
+
+        //pop-upy dla modeli
+
+        document.getElementById("przycisk").addEventListener("click", function() {
+
+
+            // Change the cursor to a pointer when the mouse is over the places layer.
+            afterMap.on('mouseenter', model, function() {
+                afterMap.getCanvas().style.cursor = 'pointer';
+            });
+
+            // Change it back to a pointer when it leaves.
+            afterMap.on('mouseleave', model, function() {
+                afterMap.getCanvas().style.cursor = '';
+            });
+
+            event.preventDefault();
+        });
+
+        afterMap.on('click', 'Wszystkie przestepstwaMezczyzni', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C1_GWR_mez + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'KradziezMezczyzni', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C1_GWR_mez + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Kradziez z wlamaniemMezczyzni', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C1_GWR_mez + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Kradziez pojazduMezczyzni', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C1_GWR_mez + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Uszkodzenie mieniaMezczyzni', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C1_GWR_mez + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Uszczerbek na zdrowiuMezczyzni', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C1_GWR_mez + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Bojka i pobicieMezczyzni', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C1_GWR_mez + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Rozboje wymuszenia i kradzieze rozbojniczeMezczyzni', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C1_GWR_mez + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'ZgwalcenieMezczyzni', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C1_GWR_mez + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'ZabojstwoMezczyzni', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C1_GWR_mez + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Ustawa o przeciwdzialaniu narkomaniiMezczyzni', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C1_GWR_mez + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Wszystkie przestepstwaKobiety', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C2_GWR_kob + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'KradziezKobiety', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C2_GWR_kob + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Kradziez z wlamaniemKobiety', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C2_GWR_kob + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Kradziez pojazduKobiety', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C2_GWR_kob + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Uszkodzenie mieniaKobiety', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C2_GWR_kob + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Uszczerbek na zdrowiuKobiety', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C2_GWR_kob + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Bojka i pobicieKobiety', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C2_GWR_kob + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Rozboje wymuszenia i kradzieze rozbojniczeKobiety', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C2_GWR_kob + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'ZgwalcenieKobiety', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C2_GWR_kob + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'ZabojstwoKobiety', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C2_GWR_kob + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Ustawa o przeciwdzialaniu narkomaniiKobiety', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C2_GWR_kob + '</div>')
+                .addTo(afterMap);
+        });
+
+
+        afterMap.on('click', 'Wszystkie przestepstwaKamery', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C4_GWR_kam + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'KradziezKamery', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C4_GWR_kam + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Kradziez z wlamaniemKamery', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C4_GWR_kam + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Kradziez pojazduKamery', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C4_GWR_kam + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Uszkodzenie mieniaKamery', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C4_GWR_kam + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Uszczerbek na zdrowiuKamery', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C4_GWR_kam + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Bojka i pobicieKamery', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C4_GWR_kam + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Rozboje wymuszenia i kradzieze rozbojniczeKamery', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C4_GWR_kam + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'ZgwalcenieKamery', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C4_GWR_kam + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'ZabojstwoKamery', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C4_GWR_kam + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Ustawa o przeciwdzialaniu narkomaniiKamery', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C4_GWR_kam + '</div>')
+                .addTo(afterMap);
+        });
+
+
+        afterMap.on('click', 'Wszystkie przestepstwaBary', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C3_GWR_bar + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'KradziezBary', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C3_GWR_bar + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Kradziez z wlamaniemBary', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C3_GWR_bar + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Kradziez pojazduBary', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C3_GWR_bar + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Uszkodzenie mieniaBary', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C3_GWR_bar + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Uszczerbek na zdrowiuBary', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C3_GWR_bar + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Bojka i pobicieBary', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C3_GWR_bar + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Rozboje wymuszenia i kradzieze rozbojniczeBary', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C3_GWR_bar + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'ZgwalcenieBary', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C3_GWR_bar + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'ZabojstwoKBary', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C3_GWR_bar + '</div>')
+                .addTo(afterMap);
+        });
+
+        afterMap.on('click', 'Ustawa o przeciwdzialaniu narkomaniiBary', function(e) {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML('<div id="popup">Wartość: ' + e.features[0].properties.C3_GWR_bar + '</div>')
+                .addTo(afterMap);
+        });
+    </script>
+
+</body>
+
+</html>
